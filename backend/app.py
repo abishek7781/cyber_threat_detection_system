@@ -3,8 +3,9 @@ import time
 import datetime
 import random
 import uuid
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
@@ -18,13 +19,38 @@ monitoring_data = {
 
 stop_event = threading.Event()
 
+# Define 30 different threat names for simulation
 threat_names = [
     "Phishing Attack",
     "Ransomware",
     "SQL Injection",
     "Cross-Site Scripting",
     "DDoS Attack",
-    "Zero-Day Exploit"
+    "Zero-Day Exploit",
+    "Malware Infection",
+    "Trojan Horse",
+    "Spyware",
+    "Adware",
+    "Rootkit",
+    "Botnet",
+    "Man-in-the-Middle",
+    "Credential Stuffing",
+    "Drive-by Download",
+    "Watering Hole Attack",
+    "Session Hijacking",
+    "DNS Spoofing",
+    "Privilege Escalation",
+    "Code Injection",
+    "Buffer Overflow",
+    "Cryptojacking",
+    "Logic Bomb",
+    "Backdoor",
+    "Exploit Kit",
+    "Keylogger",
+    "Rogue Software",
+    "Social Engineering",
+    "Supply Chain Attack",
+    "Insider Threat"
 ]
 
 threat_solutions = {
@@ -33,70 +59,132 @@ threat_solutions = {
     "SQL Injection": "Use parameterized queries and input validation to prevent injection.",
     "Cross-Site Scripting": "Implement proper input sanitization and Content Security Policy.",
     "DDoS Attack": "Use traffic filtering and rate limiting to mitigate attacks.",
-    "Zero-Day Exploit": "Keep software updated and apply security patches promptly."
+    "Zero-Day Exploit": "Keep software updated and apply security patches promptly.",
+    "Malware Infection": "Use reputable antivirus and keep systems updated.",
+    "Trojan Horse": "Avoid downloading software from untrusted sources.",
+    "Spyware": "Use anti-spyware tools and monitor network traffic.",
+    "Adware": "Install ad blockers and avoid suspicious websites.",
+    "Rootkit": "Use rootkit detection tools and keep OS patched.",
+    "Botnet": "Monitor network for unusual traffic and isolate infected devices.",
+    "Man-in-the-Middle": "Use encrypted connections and VPNs.",
+    "Credential Stuffing": "Implement multi-factor authentication and monitor login attempts.",
+    "Drive-by Download": "Keep browsers and plugins updated.",
+    "Watering Hole Attack": "Monitor trusted websites for compromise.",
+    "Session Hijacking": "Use secure cookies and session management.",
+    "DNS Spoofing": "Use DNSSEC and monitor DNS traffic.",
+    "Privilege Escalation": "Apply least privilege principle and patch vulnerabilities.",
+    "Code Injection": "Validate and sanitize all inputs.",
+    "Buffer Overflow": "Use safe coding practices and memory protection.",
+    "Cryptojacking": "Monitor CPU usage and block malicious scripts.",
+    "Logic Bomb": "Audit code and monitor system behavior.",
+    "Backdoor": "Conduct regular security audits and scans.",
+    "Exploit Kit": "Keep software updated and use intrusion detection.",
+    "Keylogger": "Use anti-keylogger software and secure input methods.",
+    "Rogue Software": "Avoid installing unknown software and use trusted sources.",
+    "Social Engineering": "Train employees and verify identities.",
+    "Supply Chain Attack": "Vet suppliers and monitor software integrity.",
+    "Insider Threat": "Implement access controls and monitor user activity."
 }
+
+# List of malicious URLs to trigger threat simulation
+malicious_urls = [
+    "https://urlhaus.abuse.ch/static/malware/2023/02/15/abcdef1234567890.exe",
+    "http://secure-login-paypal.com/account-update",
+    "https://urlhaus.abuse.ch/static/malware/2023/01/01/1a2b3c4d5e6f7g8h9i0j.exe",
+    "http://phishing-example.com/login",
+    "http://fakebank.phishingsite.com"
+]
 
 def threat_detection_simulator():
     print("Threat detection simulator thread started.")
     while True:
-        print(f"Threat detection loop: monitoring_data['website'] = {monitoring_data['website']}")
         if monitoring_data["website"]:
             monitoring_data["status"] = "Monitoring"
-            print(f"Monitoring {monitoring_data['website']}, current threat_detected: {monitoring_data['threat_detected']}")
-            # Simulate threat detection logic
-            new_threat_status = not monitoring_data["threat_detected"]
-            monitoring_data["threat_detected"] = new_threat_status
-            if new_threat_status:
-                threat_name = random.choice(threat_names)
-                domain = monitoring_data["website"]
-                if domain.startswith("http://"):
-                    domain = domain[len("http://"):]
-                elif domain.startswith("https://"):
-                    domain = domain[len("https://"):]
-                solution = threat_solutions.get(threat_name, "No solution available.")
-                monitoring_data["threat_logs"].append({
+            url = monitoring_data["website"].strip().lower()
+            safe_domains = ["google.com", "youtube.com", "facebook.com", "twitter.com", "linkedin.com", "wikipedia.org"]
+            if any(safe_domain in url for safe_domain in safe_domains):
+                monitoring_data["threat_detected"] = False
+                monitoring_data["threat_logs"] = [{
                     "id": str(uuid.uuid4()),
                     "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "website": monitoring_data["website"],
-                    "threat_name": threat_name,
-                    "domain": domain,
-                    "message": "Threat detected",
-                    "solution": solution
-                })
-                print(f"Threat detected: {threat_name} on {monitoring_data['website']}")
+                    "threat_location": monitoring_data["website"],
+                    "threat_name": "Safe Site",
+                    "domain": monitoring_data["website"],
+                    "message": f"URL {monitoring_data['website']} is in safe domains whitelist. No threats detected.",
+                    "solution": "No action needed.",
+                    "severity": "Low",
+                    "malware_family": "",
+                    "platform_type": "",
+                    "threat_entry_type": "",
+                    "cache_duration": ""
+                }]
+                print(f"URL {monitoring_data['website']} is in safe domains whitelist. No threats detected.")
+            elif url in malicious_urls:
+                monitoring_data["threat_detected"] = True
+                monitoring_data["threat_logs"] = []
+                for _ in range(30):
+                    threat_name = random.choice(threat_names)
+                    domain = monitoring_data["website"]
+                    if domain.startswith("http://"):
+                        domain = domain[len("http://"):]
+                    elif domain.startswith("https://"):
+                        domain = domain[len("https://"):]
+                    solution = threat_solutions.get(threat_name, "No solution available.")
+                    monitoring_data["threat_logs"].append({
+                        "id": str(uuid.uuid4()),
+                        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "threat_location": monitoring_data["website"],
+                        "threat_name": threat_name,
+                        "domain": domain,
+                        "message": "Threat detected",
+                        "solution": solution,
+                        "severity": random.choice(["Low", "Medium", "High", "Critical"]),
+                        "malware_family": "Unknown",
+                        "platform_type": "Unknown",
+                        "threat_entry_type": "Unknown",
+                        "cache_duration": "N/A"
+                    })
+                print(f"Simulated 30 threat detections on {monitoring_data['website']}")
             else:
-                print("No threat detected this cycle.")
-            # Wait for stop_event or timeout 5 seconds for faster updates
-            stop_event.wait(5)
-            stop_event.clear()
+                monitoring_data["threat_detected"] = False
+                monitoring_data["threat_logs"] = [{
+                    "id": str(uuid.uuid4()),
+                    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "threat_location": monitoring_data["website"],
+                    "threat_name": "Safe Site",
+                    "domain": monitoring_data["website"],
+                    "message": "The URL is safe. No threat will be detected on this site.",
+                    "solution": "No action needed.",
+                    "severity": "Low",
+                    "malware_family": "",
+                    "platform_type": "",
+                    "threat_entry_type": "",
+                    "cache_duration": ""
+                }]
+                print(f"URL {monitoring_data['website']} is safe. No threats detected.")
         else:
-            print("No website to monitor, idling.")
             monitoring_data["status"] = "Idle"
             monitoring_data["threat_detected"] = False
             monitoring_data["threat_logs"] = []
-            stop_event.wait(1)
-            stop_event.clear()
+        stop_event.wait(12)
+        stop_event.clear()
 
 @app.route('/start_monitoring', methods=['POST'])
 def start_monitoring():
     data = request.json
     website = data.get("website")
-    print(f"Received start monitoring request for website: {website}")
     if not website:
         return jsonify({"error": "Website URL is required"}), 400
     monitoring_data["website"] = website
     monitoring_data["threat_detected"] = False
-    monitoring_data["status"] = "Monitoring"  # Set immediately to Monitoring
+    monitoring_data["status"] = "Monitoring"
     monitoring_data["threat_logs"] = []
     stop_event.clear()
-    print(f"Set monitoring_data['website'] to: {monitoring_data['website']}")
     return jsonify({"message": f"Started monitoring {website}"}), 200
 
 @app.route('/stop_monitoring', methods=['POST'])
 def stop_monitoring():
-    print(f"Stop monitoring request received. Current website: {monitoring_data['website']}")
     monitoring_data["website"] = None
-    print(f"Set monitoring_data['website'] to: {monitoring_data['website']}")
     monitoring_data["threat_detected"] = False
     monitoring_data["status"] = "Idle"
     monitoring_data["threat_logs"] = []
@@ -114,6 +202,21 @@ def status():
 @app.route('/threat_logs', methods=['GET'])
 def threat_logs():
     return jsonify(monitoring_data.get("threat_logs", []))
+
+def event_stream():
+    last_log_count = 0
+    while True:
+        if monitoring_data["website"]:
+            logs = monitoring_data["threat_logs"]
+            if len(logs) != last_log_count:
+                data = f"data: {json.dumps(logs)}\n\n"
+                yield data
+                last_log_count = len(logs)
+        time.sleep(2)
+
+@app.route('/stream')
+def stream():
+    return Response(event_stream(), mimetype="text/event-stream")
 
 if __name__ == '__main__':
     print("Starting Flask app...")

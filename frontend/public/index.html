@@ -3,11 +3,423 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cyber Threat Detection System</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>CyberThreat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --secondary: #ef4444;
+      --secondary-hover: #dc2626;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --text-secondary: #94a3b8;
+      --success: #22c55e;
+      --warning: #eab308;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      text-align: center;
+      padding-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      gap: 2rem;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 1rem;
+      padding: 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary-hover);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
+    .status-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      background: var(--error);
+      color: white;
+    }
+
+    .alert-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      word-break: break-word;
+      overflow-x: auto;
+      display: block;
+    }
+
+    .log-table thead, .log-table tbody, .log-table tr, .log-table th, .log-table td {
+      display: block;
+    }
+
+    .log-table thead tr {
+      display: flex;
+      width: 100%;
+    }
+
+    .log-table tbody {
+      height: 300px;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    .log-table tr {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .log-table th, .log-table td {
+      flex: 1;
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      vertical-align: top;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .log-table th:nth-child(1), .log-table td:nth-child(1) {
+      flex: 2;
+    }
+
+    .log-table th:nth-child(2), .log-table td:nth-child(2) {
+      flex: 3;
+    }
+
+    .log-table th:nth-child(3), .log-table td:nth-child(3) {
+      flex: 2;
+    }
+
+    .log-table th:nth-child(4), .log-table td:nth-child(4) {
+      flex: 1;
+    }
+
+    .log-table th:nth-child(5), .log-table td:nth-child(5) {
+      flex: 3;
+    }
+
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .last-checked {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-top: auto;
+      font-size: 0.9rem;
+    }
+
+    .table-container {
+      overflow-y: auto;
+      flex: 1;
+      min-width: 0;
+    }
+
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <div class="container">
+    <header class="header">
+      <h1>Cyber Threat Detection</h1>
+      <p>Advanced Cyber Threat Detection & Monitoring Platform</p>
+    </header>
+
+    <div class="dashboard">
+      <div class="card">
+        <form id="monitor-form">
+          <div class="form-group">
+            <label>Website URL</label>
+            <input type="text" id="website-input" placeholder="https://example.com" required>
+          </div>
+          <div class="form-group" style="display: grid; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Start Monitoring</button>
+            <button type="button" id="stop-btn" class="btn btn-secondary">Stop Monitoring</button>
+          </div>
+        </form>
+
+        <div class="status-indicator">
+          <div class="status-dot" id="status-dot"></div>
+          <span id="status">Idle</span>
+        </div>
+
+        <div class="alert" id="threat-alert">
+          <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Potential Threat Detected!</span>
+        </div>
+
+        <div class="last-checked" id="last-checked">
+          Last updated: Not available
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom: 1rem;">Threat Logs</h2>
+        <div class="table-container">
+          <table class="log-table" role="table" aria-label="Threat Logs">
+            <thead>
+              <tr>
+                <th scope="col">Timestamp</th>
+                <th scope="col">Website</th>
+                <th scope="col">Threat Type</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Solution</th>
+              </tr>
+            </thead>
+            <tbody id="threat-log-table">
+              <tr>
+                <td colspan="5" class="empty-state">No threats detected</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button id="download-btn" class="btn btn-primary" style="margin-top: 1rem;">Download Logs</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('monitor-form');
+    const stopBtn = document.getElementById('stop-btn');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status');
+    const alertBox = document.getElementById('threat-alert');
+    const lastChecked = document.getElementById('last-checked');
+    const threatLogTable = document.getElementById('threat-log-table');
+    const logContainer = document.querySelector('.table-container');
+    const downloadBtn = document.getElementById('download-btn');
+    const websiteInput = document.getElementById('website-input');
+
+    let monitoring = false;
+    let currentLogs = [];
+    let previousLogCount = 0;
+
+    function updateStatus(state) {
+      statusText.textContent = state;
+      statusDot.classList.toggle('active', state === 'Monitoring');
+    }
+
+    function addThreatLogEntry(log) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td data-label="Timestamp">${log.timestamp}</td>
+        <td data-label="Website">${log.threat_location || log.website || 'N/A'}</td>
+        <td data-label="Threat Type">${log.threat_name}</td>
+        <td data-label="Severity">${log.severity || 'High'}</td>
+        <td data-label="Solution">${log.solution}</td>
+      `;
+      threatLogTable.querySelector('.empty-state')?.remove();
+      threatLogTable.appendChild(row);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function showAlert() {
+      alertBox.style.display = 'flex';
+      setTimeout(() => alertBox.style.display = 'none', 4000);
+    }
+
+    function connectSSE() {
+      const eventSource = new EventSource('http://localhost:5001/stream');
+      eventSource.onmessage = function(event) {
+        const logs = JSON.parse(event.data);
+        currentLogs = logs;
+        threatLogTable.innerHTML = '';
+        if (logs.length === 0) {
+          threatLogTable.innerHTML = '<tr><td colspan="5" class="empty-state">No threats detected</td></tr>';
+        } else {
+          logs.forEach(log => {
+            addThreatLogEntry(log);
+          });
+          if (logs.length > previousLogCount) {
+            showAlert();
+          }
+          previousLogCount = logs.length;
+        }
+        lastChecked.textContent = `Last updated: ${new Date().toLocaleString()}`;
+      };
+      eventSource.onerror = function(err) {
+        console.error('EventSource failed:', err);
+        eventSource.close();
+      };
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const website = websiteInput.value.trim();
+      if (!website) return;
+
+      monitoring = true;
+      updateStatus('Monitoring');
+      await fetch('http://localhost:5001/start_monitoring', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ website })
+      });
+      connectSSE();
+    });
+
+    stopBtn.addEventListener('click', async () => {
+      monitoring = false;
+      updateStatus('Idle');
+      lastChecked.textContent = 'Monitoring stopped.';
+      threatLogTable.innerHTML = '<tr><td colspan="5" class="empty-state">No threats detected</td></tr>';
+      await fetch('http://localhost:5001/stop_monitoring', { method: 'POST' });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (currentLogs.length === 0) return;
+      const element = document.createElement('a');
+      const file = new Blob([JSON.stringify(currentLogs, null, 2)], { type: 'application/json' });
+      element.href = URL.createObjectURL(file);
+      element.download = 'threat_logs.json';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    });
+  </script>
 </body>
 </html>

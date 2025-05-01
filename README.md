@@ -69,11 +69,16 @@ This project is a web application that monitors a specified website for cyber th
 - Detected threats will appear in the threat detection log.
 - Click "Stop Monitoring" to stop the monitoring process.
 
-## Notes
+### Notes on Threat Simulation
 
-- This project simulates threat detection for demonstration purposes.
-- Large files in `node_modules` are not included in the repository. Use `.gitignore` to exclude them.
-- For production deployment, consider securing the API and optimizing performance.
+- The backend simulates threat detection only for specific malicious URLs:
+  - https://urlhaus.abuse.ch/static/malware/2023/02/15/abcdef1234567890.exe
+  - http://secure-login-paypal.com/account-update
+  - https://urlhaus.abuse.ch/static/malware/2023/01/01/1a2b3c4d5e6f7g8h9i0j.exe
+  - http://phishing-example.com/login
+  - http://fakebank.phishingsite.com
+- For these URLs, 30 different threat types are simulated and refreshed every 12 seconds.
+- For safe URLs (including a whitelist of common safe domains), the UI will show a message indicating the URL is safe and no threats are detected.
 
 ## License
 
